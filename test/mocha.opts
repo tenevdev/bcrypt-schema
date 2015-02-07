@@ -1,0 +1,4 @@
+-r test/helpers/env
+-r test/helpers/chai
+-R spec
+-u bdd

@@ -1,0 +1,32 @@
+{
+    // Environment
+    "browser": true,
+    "node": true,
+    "mocha": true,
+    "predef": [
+        "expect"
+    ],
+    "devel": false,
+
+    // Enforcing
+    "bitwise": true,
+    "curly": false,
+    "eqeqeq": true,
+    "latedef": true,
+    "maxparams": 4,
+    "maxdepth": 4,
+    "maxstatements": 15,
+    "maxcomplexity": 6,
+    "noarg": true,
+    "shadow": false,
+    "undef": true,
+
+    // Relaxing
+    "asi": true,
+    "boss": false,
+    "debug": false,
+    "eqnull": true,
+    "evil": false,
+    "expr": false,
+    "loopfunc": false
+}
