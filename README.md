@@ -1,4 +1,6 @@
 # bcrypt-schema
+[![Build Status](https://travis-ci.org/tenevdev/bcrypt-schema.svg?branch=master)](https://travis-ci.org/tenevdev/bcrypt-schema) [![Dependency Status](https://david-dm.org/tenevdev/bcrypt-schema.svg)](https://david-dm.org/tenevdev/bcrypt-schema) [![devDependency Status](https://david-dm.org/tenevdev/bcrypt-schema/dev-status.svg)](https://david-dm.org/tenevdev/bcrypt-schema#info=devDependencies) [![Codacy Badge](https://www.codacy.com/project/badge/667351977af44ab2a0884900f2257a14)](https://www.codacy.com/public/tenevdev/bcrypt-schema)
+
 NPM package for adding encryption on schema fields. Can be used as a Mongoose plugin. Designed for use with Node.js and installable via `npm install bcrypt-schema`
 
 ## Quick examples
