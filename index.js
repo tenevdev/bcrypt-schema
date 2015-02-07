@@ -72,6 +72,15 @@ module.exports = {
     verify: verify,
     set: set,
     setEncryption: setEncryption,
-    _getVerifierForField: getVerifierForField,
-    _getSetterForField: getSetterForField
+}
+
+if (process.env.NODE_ENV === 'test') {
+    // Export private members
+    module.exports = {
+        verify: verify,
+        set: set,
+        setEncryption: setEncryption,
+        getSetterForField: getSetterForField,
+        getVerifierForField: getVerifierForField
+    }
 }

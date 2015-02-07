@@ -80,7 +80,7 @@ describe('bcrypt-schema', function() {
                 done()
             })
         })
-        it('should call next with error when there is error in hash', function(done){
+        it('should call next with error when there is error in hash', function(done) {
             bcryptSchema.set(errorValue, hashField, function(err) {
                 expect(err).to.exist
                 done()
@@ -129,22 +129,62 @@ describe('bcrypt-schema', function() {
             })
         })
     })
-    describe('getVerifierForField(fieldName)', function() {
-        var result
-        beforeEach('call getVerifierForField', function() {
-            result = bcryptSchema._getVerifierForField('test-field')
+    describe('private members', function() {
+        describe('getVerifierForField(fieldName)', function() {
+            var verifier = bcryptSchema.getVerifierForField(hashField),
+                user = {
+                    verify: verifier
+                }
+            user[hashField] = hashValue
+            it('should return a function', function() {
+                expect(verifier).to.be.a('function')
+            })
+            describe('and this function', function() {
+                it('should verify a passing value', function(done) {
+                    user.verify(passingValue, function(err, isVerified) {
+                        expect(err).to.not.exist
+                        expect(isVerified).to.be.true
+                        done()
+                    })
+                })
+                it('should not verify a failing value', function(done) {
+                    user.verify(failingValue, function(err, isVerified) {
+                        expect(err).to.not.exist
+                        expect(isVerified).to.be.false
+                        done()
+                    })
+                })
+                it('should error if an error occurs', function(done) {
+                    user.verify(errorValue, function(err, isVerified) {
+                        expect(err).to.exist
+                        done()
+                    })
+                })
+            })
         })
-        it('should return a function', function() {
-            expect(result).to.be.a('function')
-        })
-    })
-    describe('getSetterForField(fieldName)', function() {
-        var result
-        beforeEach('call getSetterForField', function() {
-            result = bcryptSchema._getSetterForField('test-field')
-        })
-        it('should return a function', function() {
-            expect(result).to.be.a('function')
+        describe('getSetterForField(fieldName)', function() {
+            var setter = bcryptSchema.getSetterForField(hashField),
+                user = {
+                    set: setter
+                }
+
+            it('should return a function', function() {
+                    expect(setter).to.be.a('function')
+            })
+            describe('and this function', function() {
+                it('should set a value', function(done) {
+                    user.set(passingValue, function(err){
+                        expect(err).to.not.exist
+                        expect(user[hashField]).to.equal(hashValue)
+                        done()
+                    })
+                })
+                it('should error if an error occurs in hashing', function(){
+                    user.set(errorValue, function(err){
+                        expect(err).to.exist
+                    })
+                })
+            })
         })
     })
 })
