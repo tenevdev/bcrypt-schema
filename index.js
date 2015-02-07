@@ -55,11 +55,8 @@ function getSetterForField(fieldName) {
 }
 
 function setEncryption(schema, options) {
-    var fieldName, capitlaizedFieldName,
-        verifyMethodName, setMethodName
-
     if (typeof options === 'string') {
-        capitlaizedFieldName = options.charAt(0).toUpperCase() + options.slice(1)
+        var capitlaizedFieldName = options.charAt(0).toUpperCase() + options.slice(1)
 
         options = {
             field: options,
