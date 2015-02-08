@@ -87,7 +87,7 @@ __Arguments__
 * `next(err, isVeified)` - A callback which is called after the comparison has finished.
 
 <a name="set" />
-### set(value, hashField, next)
+### set(value, hashField, [saltIterations], next)
 
 Hasheh the given value using bcrypt's `genSalt` and `hash` and assigns it to `this[hashField]`.
 
@@ -95,6 +95,7 @@ __Arguments__
 
 * `value` - The plain value to hash.
 * `hashField` - The name of the property to be set.
+* `saltIterations` - Optional. A parameter passed to `bcrypt.genSalt`. Defaults to 10.
 * `next(err)` - A callback which is called after hashing has finished.
 
 <a name="setEncryption" />
@@ -110,6 +111,7 @@ __Arguments__
   - `field` - The name of the field to be encrypted
   - `verify` - The name of the verify method attached as an instance method on the `schema.methods`
   - `set` - The name of the set method attached as an instance method on the `schema.methods`
+  - `saltIterations` - A parameter passed to `bcrypt.genSalt`. Defaults to 10
 
 __Example__
 
@@ -123,7 +125,8 @@ var mongoose = require('mongoose'),
 schema.plugin(encryption, {
         field: 'password',
         verify: 'customVerifyName',
-        set: 'customSetName'
+        set: 'customSetName',
+        saltIterations: 100
     })
 ```
 
