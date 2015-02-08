@@ -8,10 +8,15 @@ function verify(value, hash, next) {
     })
 }
 
-function set(value, hashField, next) {
+function set(value, hashField, saltIterations, next) {
     var self = this
 
-    bcrypt.genSalt(10, function(err, salt) {
+    if(typeof saltIterations === 'function'){
+        next = saltIterations
+        saltIterations = 10
+    }
+
+    bcrypt.genSalt(saltIterations, function(err, salt) {
         if (err)
             return next(err)
         bcrypt.hash(value, salt, function(err, hash) {
@@ -25,9 +30,9 @@ function set(value, hashField, next) {
     })
 }
 
-function getVerifierForField(fieldName) {
+function getVerifierForField(options) {
     return function(value, next) {
-        bcrypt.compare(value, this[fieldName], function(err, res) {
+        bcrypt.compare(value, this[options.field], function(err, res) {
             if (err)
                 return next(err)
             return next(null, res)
@@ -35,11 +40,11 @@ function getVerifierForField(fieldName) {
     }
 }
 
-function getSetterForField(fieldName) {
+function getSetterForField(options) {
     return function(value, next) {
         var self = this
 
-        bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.genSalt(options.saltIterations, function(err, salt) {
             if (err)
                 return next(err)
             bcrypt.hash(value, salt, function(err, hash) {
@@ -47,7 +52,7 @@ function getSetterForField(fieldName) {
                     return next(err)
 
                 // Set new hash
-                self[fieldName] = hash
+                self[options.field] = hash
                 return next()
             })
         })
@@ -61,11 +66,17 @@ function setEncryption(schema, options) {
         options = {
             field: options,
             verify: 'verify' + capitlaizedFieldName,
-            set: 'set' + capitlaizedFieldName
+            set: 'set' + capitlaizedFieldName,
+            saltIterations: 10
         }
     }
-    schema.methods[options.verify] = getVerifierForField(options.field)
-    schema.methods[options.set] = getSetterForField(options.field)
+
+    if (!options.saltIterations) {
+        options.saltIterations = 10
+    }
+
+    schema.methods[options.verify] = getVerifierForField(options)
+    schema.methods[options.set] = getSetterForField(options)
 }
 
 module.exports = {
