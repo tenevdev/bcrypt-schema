@@ -8,7 +8,7 @@ var bcryptSchema = require('..'),
     hashField = 'hash-field',
     saltValue = 'salt-value',
     compare, passingCompare, failingCompare, errorCompare,
-    genSalt, passingGenSalt,
+    genSalt, passingGenSalt, errorGenSalt,
     hash, passingHash, errorHash
 
 describe('bcrypt-schema', function() {
