@@ -16,14 +16,15 @@ describe('bcrypt-schema', function() {
         compare = sinon.stub(bcrypt, 'compare')
         passingCompare = compare.withArgs(passingValue, hashValue).yields(null, true)
         failingCompare = compare.withArgs(failingValue, hashValue).yields(null, false)
-        errorCompare = compare.withArgs(errorValue, hashValue).yields('error', undefined)
+        errorCompare = compare.withArgs(errorValue, hashValue).yields(errorValue)
 
         genSalt = sinon.stub(bcrypt, 'genSalt')
         passingGenSalt = genSalt.withArgs(10).yields(null, saltValue)
+        errorGenSalt = genSalt.withArgs(errorValue).yields(errorValue)
 
         hash = sinon.stub(bcrypt, 'hash')
         passingHash = hash.withArgs(passingValue, saltValue).yields(null, hashValue)
-        errorHash = hash.withArgs(errorValue, saltValue).yields('error')
+        errorHash = hash.withArgs(errorValue, saltValue).yields(errorValue)
     })
     after('restore bcrypt', function() {
         bcrypt.compare.restore()
@@ -86,6 +87,13 @@ describe('bcrypt-schema', function() {
                 done()
             })
         })
+        it('should call next with error if there is error in genSalt', function(done) {
+            bcryptSchema.set(passingValue, hashField, errorValue,
+                function(err) {
+                    expect(err).to.exist
+                    done()
+                })
+        })
     })
     describe('setEncyption(schema, options)', function() {
         var schema = {
@@ -131,7 +139,11 @@ describe('bcrypt-schema', function() {
     })
     describe('private members', function() {
         describe('getVerifierForField(fieldName)', function() {
-            var verifier = bcryptSchema.getVerifierForField(hashField),
+            var options = {
+                    field: hashField,
+                    saltIterations: 10
+                },
+                verifier = bcryptSchema.getVerifierForField(options),
                 user = {
                     verify: verifier
                 }
@@ -163,25 +175,37 @@ describe('bcrypt-schema', function() {
             })
         })
         describe('getSetterForField(fieldName)', function() {
-            var setter = bcryptSchema.getSetterForField(hashField),
+            var options = {
+                    field: hashField,
+                    saltIterations: 10
+                },
+                setter = bcryptSchema.getSetterForField(options),
                 user = {
                     set: setter
                 }
 
             it('should return a function', function() {
-                    expect(setter).to.be.a('function')
+                expect(setter).to.be.a('function')
             })
             describe('and this function', function() {
                 it('should set a value', function(done) {
-                    user.set(passingValue, function(err){
+                    user.set(passingValue, function(err) {
                         expect(err).to.not.exist
                         expect(user[hashField]).to.equal(hashValue)
                         done()
                     })
                 })
-                it('should error if an error occurs in hashing', function(){
-                    user.set(errorValue, function(err){
+                it('should error if an error in hashing occurs', function(done) {
+                    user.set(errorValue, function(err) {
                         expect(err).to.exist
+                        done()
+                    })
+                })
+                it('should error if an error in salting occurs', function(done) {
+                    options.saltIterations = errorValue
+                    user.set(passingValue, function(err) {
+                        expect(err).to.exist
+                        done()
                     })
                 })
             })
